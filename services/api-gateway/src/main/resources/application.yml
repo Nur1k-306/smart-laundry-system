@@ -1,0 +1,50 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  cloud:
+    gateway:
+      forwarded:
+        enabled: false
+      x-forwarded:
+        enabled: false
+  threads:
+    virtual:
+      enabled: true
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:smart-laundry-super-secret-key-please-change}
+    issuer: smart-laundry
+    expiration-minutes: 240
+  rate-limit:
+    requests-per-minute: 120
+  services:
+    user-service: ${USER_SERVICE_URL:http://localhost:8081}
+    device-service: ${DEVICE_SERVICE_URL:http://localhost:8082}
+    booking-service: ${BOOKING_SERVICE_URL:http://localhost:8083}
+    payment-service: ${PAYMENT_SERVICE_URL:http://localhost:8084}
+    wash-service: ${WASH_SERVICE_URL:http://localhost:8085}
+    notification-service: ${NOTIFICATION_SERVICE_URL:http://localhost:8086}
+    analytics-service: ${ANALYTICS_SERVICE_URL:http://localhost:8087}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,gateway
+  tracing:
+    sampling:
+      probability: 1.0
+  otlp:
+    tracing:
+      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318/v1/traces}
+
+logging:
+  config: classpath:logback-spring.xml

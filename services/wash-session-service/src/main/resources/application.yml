@@ -1,0 +1,42 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: wash-session-service
+  data:
+    mongodb:
+      uri: ${WASH_SERVICE_MONGO_URI:mongodb://localhost:27017/wash_service}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: wash-session-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  threads:
+    virtual:
+      enabled: true
+
+app:
+  wash:
+    duration-seconds: ${WASH_DURATION_SECONDS:180}
+    completion-check-ms: ${WASH_COMPLETION_CHECK_MS:5000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  tracing:
+    sampling:
+      probability: 1.0
+  otlp:
+    tracing:
+      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318/v1/traces}
+
+logging:
+  config: classpath:logback-spring.xml
